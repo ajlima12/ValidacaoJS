@@ -1,0 +1,252 @@
+<html>
+
+<head>
+    <title>Formulario usando JS</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script>
+        
+        // Função para validar CEP usando o serviço ViaCEP
+        function validarCEP(cep) {
+            var xhr = new XMLHttpRequest();
+            var url = "https://viacep.com.br/ws/" + cep + "/json/";
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var data = JSON.parse(xhr.responseText);
+                    if (!data.erro) {
+                        console.log("CEP válido. Cidade: " + data.localidade + ", Estado: " + data.uf);
+                    } else {
+                        console.log("CEP inválido.");
+                    }
+                }
+            };
+            xhr.open("GET", url, true);
+            xhr.send();
+        }
+
+
+
+
+        // Função para validar CPF
+        function validarCPF(cpf) {
+            cpf = cpf.replace(/[^\d]/g, ''); // Remove caracteres não numéricos
+            if (cpf.length !== 11 || !/[0-9]{11}/.test(cpf)) {
+                console.log("CPF inválido. Deve conter 11 dígitos numéricos.");
+                return false;
+            }
+
+            // Calcula os dígitos verificadores
+            var soma = 0;
+            for (var i = 0; i < 9; i++) {
+                soma += parseInt(cpf.charAt(i)) * (10 - i);
+            }
+            var resto = soma % 11;
+            var digito1 = resto < 2 ? 0 : 11 - resto;
+
+            soma = 0;
+            for (var i = 0; i < 10; i++) {
+                soma += parseInt(cpf.charAt(i)) * (11 - i);
+            }
+            resto = soma % 11;
+            var digito2 = resto < 2 ? 0 : 11 - resto;
+
+            // Verifica os dígitos verificadores
+            if (parseInt(cpf.charAt(9)) !== digito1 || parseInt(cpf.charAt(10)) !== digito2) {
+                console.log("CPF inválido. Dígitos verificadores não correspondem.");
+                return false;
+            }
+
+            console.log("CPF válido.");
+            return true;
+        }
+        function mascaraCPF(cpf) {
+            cpf = cpf.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona ponto após os primeiros 3 dígitos
+            cpf = cpf.replace(/(\d{3})(\d)/, '$1.$2'); // Adiciona ponto após os próximos 3 dígitos
+            cpf = cpf.replace(/(\d{3})(\d{1,2})$/, '$1-$2'); // Adiciona hífen após os últimos dígitos
+            return cpf;
+        }
+
+        // Função para aplicar máscara no CEP
+        function mascaraCEP(cep) {
+            cep = cep.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+            cep = cep.replace(/(\d{5})(\d{1,3})$/, '$1-$2'); // Adiciona hífen após os primeiros 5 dígitos
+            return cep;
+        }
+
+        // Função para aplicar máscara no telefone fixo
+        function mascaraTelefoneFixo(telefoneFixo) {
+            telefoneFixo = telefoneFixo.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+            telefoneFixo = telefoneFixo.replace(/(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3'); // Formato (XX) XXXX-XXXX
+            return telefoneFixo;
+        }
+
+        // Função para aplicar máscara no celular
+        function mascaraCelular(celular) {
+            celular = celular.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+            celular = celular.replace(/(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3'); // Formato (XX) XXXXX-XXXX
+            return celular;
+        }
+
+        // Função para limpar o erro ao digitar no input
+        function limparErro(campo) {
+            var erroElement = document.getElementById(campo + "-erro");
+            if (erroElement) {
+                erroElement.textContent = "";
+            }
+        }
+
+        function filtrarNumeros(input) {
+    input.value = input.value.replace(/[^\d.\-() ]/g, ''); // Remove caracteres não numéricos, exceto ".", "-", "(", ")", e espaços
+}
+
+
+        
+
+
+
+        // Função que valida todos os campos do formulario 
+        function validacaoForm() {
+            var nome = document.getElementById("nome").value;
+            var endereco = document.getElementById("endereco").value;
+            var bairro = document.getElementById("bairro").value;
+            var cep = document.getElementById("cep").value;
+            var cidade = document.getElementById("cidade").value;
+            var estado = document.getElementById("estado").value;
+            var telefoneFixo = document.getElementById("telefoneFixo").value;
+            var celular = document.getElementById("celular").value;
+            var rg = document.getElementById("rg").value;
+            var cpf = document.getElementById("cpf").value;
+
+            // Função para exibir mensagem de erro abaixo de um campo
+            function mostrarErro(campo, mensagem) {
+
+                var erroElement = document.getElementById(campo + "-erro");
+
+                if (!erroElement) {
+                    erroElement = document.createElement("p");
+                    erroElement.id = campo + "-erro";
+                    erroElement.className = "erro";
+
+                    document.getElementById(campo).parentNode.appendChild(erroElement);
+                }
+
+                erroElement.textContent = mensagem;
+                console.log("Erro no campo " + campo + ": " + mensagem);
+            }
+
+            // Validação do campo Nome
+            if (nome === "") {
+                console.log("O campo nome está vazio");
+                return;
+            }
+
+            // Validação do campo CEP
+            if (cep === "" || !/^\d{5}-\d{3}$/.test(cep)) {
+                console.log( "O campo CEP está vazio ou possui um formato inválido");
+                return;
+            } else {
+                validarCEP(cep);
+            }
+            // Validação do campo Endereço
+            if (endereco === "") {
+                console.log("O campo endereço está vazio");
+                return;
+            }
+
+            // Validação do campo Bairro
+            if (bairro === "") {
+                console.log( "O campo bairro está vazio");
+                return;
+            }
+            if (cidade === "") {
+                console.log( " O campo cidade está vazio");
+                return;
+            }
+
+            // Validação do campo Estado
+            if (estado === "") {
+                console.log("O campo estado está vazio");
+                return;
+            }
+
+            // Validação do campo Telefone Fixo
+            if (telefoneFixo === "" || !/^\(\d{2}\)\s\d{4}-\d{4}$/.test(telefoneFixo)) {
+                console.log( "O campo felefone fixo está vazio ou possui um formato inválido");
+                return;
+            }
+
+            // Validação do campo Celular
+            if (celular === "" || !/^\(\d{2}\)\s\d{5}-\d{4}$/.test(celular)) {
+                console.log( "O campo Celular está vazio ou possui um formato inválido");
+                return;
+            }
+
+            // Validação do campo RG
+            if (rg === "" || !/^\d{2}\.\d{3}\.\d{3}-\d{1}$/.test(rg)) {
+                console.log( "O campo RG está vazio ou possui um formato inválido");
+                return;
+            }
+
+            // Validação do campo CPF
+            if (cpf === "" || !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(cpf)) {
+                console.log("O campo CPF está vazio ou possui um formato inválido");
+                return;
+            } else {
+                if (!validarCPF(cpf)) {
+                    return; // CPF inválido, não continue com o envio
+                }
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+
+    <h1>Formulario usando JS</h1>
+
+    <form>
+        <label for="nome">Nome:</label>
+        <input type="text" id="nome" name="nome" placeholder="Digite seu nome"><br><br>
+
+        <label for="endereco">Endereço:</label>
+        <input type="text" id="endereco" name="endereco" placeholder="Digite seu endereço"><br><br>
+
+        <label for="bairro">Bairro:</label>
+        <input type="text" id="bairro" name="bairro" placeholder="Digite seu bairro"><br><br>
+
+        <label for="cep">CEP:</label>
+        <input type="text" id="cep" name="cep" oninput="filtrarNumeros(this);" placeholder="XXXXX-XXX"><br><br>
+
+        <label for="cidade">Cidade:</label>
+        <input type="text" id="cidade" name="cidade" placeholder="Digite sua cidade"><br><br>
+
+        <label for="estado">Estado:</label>
+        <select id="estado" name="estado">
+            <option value="SP">São Paulo (SP)</option>
+            <option value="AC">Acre (AC)</option>
+            <option value="AL">Alagoas (AL)</option>
+            <option value="AP">Amapá (AP)</option>
+            <option value="AM">Amazonas (AM)</option>
+            <option value="RJ">Rio de Janeiro (RJ)</option>
+        </select><br><br>
+
+        <label for="telefone_fixo">Telefone Fixo:</label>
+        <input type="text" id="telefoneFixo" name="telefoneFixo" oninput="filtrarNumeros(this);" placeholder=" (XX) XXXX-XXXX"><br><br>
+
+        <label for="celular">Celular:</label>
+        <input type="text" id="celular" name="celular" oninput="filtrarNumeros(this);" placeholder=" (XX) XXXXX-XXXX"><br><br>
+
+        <label for="rg">RG:</label>
+        <input type="text" id="rg" name="rg" placeholder="XX.XXX.XXX-X"><br><br>
+
+        <label for="cpf">CPF:</label>
+        <input type="text" id="cpf" name="cpf" oninput="filtrarNumeros(this);" placeholder="XXX.XXX.XXX-XX"><br><br>
+
+        <input type="button" value="Enviar" onclick="validacaoForm()">
+    </form>
+</body>
+
+</html>

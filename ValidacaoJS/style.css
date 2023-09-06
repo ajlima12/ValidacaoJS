@@ -1,0 +1,50 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+}
+
+h1 {
+    text-align: center;
+   
+}
+
+form {
+    max-width: 700px; 
+    margin: 0 auto;
+    padding: 10px;
+    background-color: #d5e9f7;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 5px; /* Reduza o tamanho do padding interno para diminuir o tamanho dos elementos internos */
+    margin-bottom: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+input[type="button"] {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+input[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+.erro {
+    color: #ff0000;
+    font-size: 12px; /* Reduza o tamanho da fonte para diminuir o tamanho do texto de erro */
+}
